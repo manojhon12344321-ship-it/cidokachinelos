@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CIDOKA CHINELOS - Oficial com IA</title>
+<title>CIDOKA CHINELOS - Oficial</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,Arial}
 body{background:#fff6f8}
@@ -44,43 +44,36 @@ header img{height:42px;border-radius:8px;background:#fff;padding:2px}
 .editCard.editando{border-color:#ff8fab;background:#fff0f5}
 .btn{border:0;padding:10px 14px;border-radius:10px;font-weight:700;margin:3px;cursor:pointer}
 .btn-ok{background:#25D366;color:#fff}.btn-del{background:#ffe0e0;color:#a00}.btn-edit{background:#111;color:#fff}.btn-galeria{background:linear-gradient(135deg,#ff8fab,#ffb3c6);color:#fff;width:100%;padding:14px;font-size:15px;border-radius:12px;cursor:pointer}
+.btn-encomenda{background:#111;color:#fff;width:100%;padding:14px;border-radius:12px;font-weight:800;margin-top:8px;cursor:pointer}
 #lock{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:9999}
 #lock.show{display:flex}.lockBox{background:#fff;padding:20px;border-radius:16px;width:90%;max-width:320px;text-align:center}
 .previewImg{width:100%;max-height:200px;object-fit:contain;border-radius:12px;display:none;margin:8px 0;border:2px dashed #ff8fab}
-#iaBtn{position:fixed;bottom:20px;right:20px;background:linear-gradient(135deg,#ff8fab,#ffb3c6);color:#fff;border:0;width:60px;height:60px;border-radius:50%;font-size:28px;box-shadow:0 6px 20px rgba(255,100,150,.4);z-index:998;cursor:pointer;animation:pulse 2s infinite}
-@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
-#iaBox{position:fixed;bottom:90px;right:12px;width:92%;max-width:360px;background:#fff;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,.2);display:none;flex-direction:column;z-index:999;overflow:hidden;border:1px solid #f0c2d0}
-#iaHead{background:linear-gradient(135deg,#ff8fab,#ffb3c6);color:#fff;padding:12px;font-weight:800;display:flex;justify-content:space-between}
-#iaMsgs{height:320px;overflow:auto;padding:12px;background:#fff6f8}
-.msg{padding:8px 12px;border-radius:14px;margin:6px 0;max-width:85%;font-size:14px}
-.msg.ia{background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.05)}
-.msg.user{background:#111;color:#fff;margin-left:auto}
-#iaInputRow{display:flex;gap:6px;padding:10px;background:#fff;border-top:1px solid #f0c2d0}
-#iaInputRow input{flex:1;padding:10px;border-radius:20px;border:1px solid #f0c2d0;outline:none}
 .alertIA{background:#ffefcc;border-left:4px solid #ff8fab;padding:8px 10px;border-radius:8px;margin:6px 0;font-size:12px}
 </style>
 </head>
 <body>
 <header id="logoHeader"><img src="./logo.png" onerror="this.style.display='none'"><div><h1 style="font-size:20px">CIDOKA CHINELOS</h1></div></header>
 <img class="banner" src="./banner_feminino.jpg" onerror="this.src='https://i.imgur.com/8Qm5X7a.jpeg'">
-
 <div id="lock"><div class="lockBox"><h3>🔒 Admin CIDOKA</h3><input id="x1" type="password" placeholder="Senha" style="width:100%;padding:14px;border:2px solid #111;border-radius:10px;margin:12px 0;text-align:center;letter-spacing:5px"><button class="btn btn-edit" style="width:100%;padding:12px" onclick="check()">Entrar</button><button class="btn" style="width:100%;background:#eee;margin-top:6px" onclick="document.getElementById('lock').classList.remove('show')">Cancelar</button></div></div>
 
+<!-- MODO CLIENTE - LIMPO IGUAL SEMPRE FOI -->
 <div id="loja">
 <div class="lojaTop"><div class="searchRow"><input id="buscaLoja" placeholder="🔍 Buscar código A1..." oninput="loadLoja()"><button class="btn-cart" onclick="abrirCarrinho()">🛒 <span id="cartCount">0</span></button></div><div class="cats"><button class="cat on" id="cat-todos" onclick="setCat('todos')">Todos</button><button class="cat off" id="cat-chinelo" onclick="setCat('chinelo')">🩴 Chinelos</button><button class="cat off" id="cat-sabonete" onclick="setCat('sabonete')">🧼 Sabonetes</button></div></div>
 <div id="produtos" class="grid">Carregando produtos...</div>
 <div style="text-align:center;padding:20px;color:#cc8a9c;font-size:12px">🌸 CIDOKA Chinelos - Teixeira de Freitas - 73 9961-3272 🌸</div>
 </div>
 
+<!-- MODO ADMIN - COM TUDO DE IA E ENCOMENDAS -->
 <div id="adminArea">
-<div class="adminHeader"><h2>🌸 ADMIN CIDOKA COM IA</h2><p style="font-size:12px">IA 1 Vendedora + 6 Previsão + 7 Abandonados ativas</p></div>
+<div class="adminHeader"><h2>🌸 ADMIN CIDOKA COM IA</h2><p style="font-size:12px">Dashboard, Encomendas e IA - só no admin</p></div>
 <div class="dash" id="dash"></div>
 <div class="tabs">
 <button id="t-pedidos" class="tab off" onclick="setAba('pedidos')">📦 Pedidos</button>
 <button id="t-clientes" class="tab off" onclick="setAba('clientes')">👥 Clientes</button>
+<button id="t-encomendas" class="tab off" onclick="setAba('encomendas')">📝 Encomendas</button>
 <button id="t-produtos" class="tab on" onclick="setAba('produtos')">🩴 Catálogo</button>
-<button id="t-abandonados" class="tab off" onclick="setAba('abandonados')">🤖 Abandonados</button>
-<button id="t-ia" class="tab off" onclick="setAba('ia')">🧠 IA Estoque</button>
+<button id="t-abandonados" class="tab off" onclick="setAba('abandonados')">🤖 Abandon.</button>
+<button id="t-ia" class="tab off" onclick="setAba('ia')">🧠 IA</button>
 <button class="tab off" onclick="localStorage.removeItem('_a');location.href=location.pathname">🚪 Sair</button>
 </div>
 <div style="padding:0 10px"><input id="busca" class="input" placeholder="🔍 Buscar no admin..." oninput="loadAdmin()"></div>
@@ -90,13 +83,6 @@ header img{height:42px;border-radius:8px;background:#fff;padding:2px}
 
 <div id="cart" onclick="if(event.target.id==='cart')fecharCarrinho()"><div id="cartBox"><h3>Seu Pedido <span style="float:right;cursor:pointer;font-size:22px" onclick="fecharCarrinho()">✕</span></h3><div id="cartItems"></div><div class="totalBox" id="total">Total: R$ 0,00</div><input id="nome" class="input" placeholder="Seu nome *"><input id="whats" class="input" placeholder="WhatsApp *"><input id="endereco" class="input" placeholder="Endereço"><select id="pagamento" class="input"><option>Pix</option><option>Dinheiro</option><option>Cartão na entrega</option></select><button class="btnzap" onclick="finalizar()">FINALIZAR NO WHATSAPP ✅</button></div></div>
 
-<button id="iaBtn" onclick="toggleIA()">🌸</button>
-<div id="iaBox">
-  <div id="iaHead"><span>🌸 Cida IA - 24h Online</span><span style="cursor:pointer" onclick="toggleIA()">✕</span></div>
-  <div id="iaMsgs"><div class="msg ia">Oi! Sou a Cida IA 🌸<br>Atendo 24h!<br><br>Me pergunta:<br>• "Tem A1 tamanho 38?"<br>• "Quero rosa até 60 reais"<br>• "Quanto tempo entrega?"</div></div>
-  <div id="iaInputRow"><input id="iaInput" placeholder="Digite..." onkeydown="if(event.key==='Enter') enviarIA()"><button class="btn btn-edit" onclick="enviarIA()">➤</button></div>
-</div>
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -105,7 +91,7 @@ const MEU_ZAP="557399613272";
 const _k=atob("Y2lkYTMwNDA1MA==");
 const app=initializeApp(firebaseConfig);
 const db=getFirestore(app);
-let aba='produtos',cat='todos',clicks=0,timer=null,imagemBase64="",galeriaEdit={},todos={pedidos:[],clientes:[],produtos:[],abandonados:[]};
+let aba='produtos',cat='todos',clicks=0,timer=null,imagemBase64="",galeriaEdit={},todos={pedidos:[],clientes:[],produtos:[],abandonados:[],encomendas:[]};
 const fallback=[
   {codigo:"A1",nome:"Chinelo Floral Rosa A1",preco:59.90,imagem:"./chinelo_A1.jpg",estoque:12},
   {codigo:"A2",nome:"Chinelo Preto Básico A2",preco:49.90,imagem:"./chinelo_A1.jpg",estoque:20},
@@ -114,257 +100,117 @@ const fallback=[
 ];
 let produtos=[...fallback],carrinho=[],abandonTimer=null;
 
-const headerEl=document.getElementById("logoHeader");
-headerEl.addEventListener("click",()=>{
-  clicks++;
-  clearTimeout(timer);
-  timer=setTimeout(()=>{clicks=0;},3000);
-  if(clicks>=5){
-    clicks=0;
-    document.getElementById('lock').classList.add('show');
-    document.getElementById('x1').focus();
-  }
+document.getElementById("logoHeader").addEventListener("click",()=>{
+  clicks++;clearTimeout(timer);timer=setTimeout(()=>clicks=0,3000);
+  if(clicks>=5){clicks=0;document.getElementById('lock').classList.add('show');document.getElementById('x1').focus();}
 });
-
-window.setAba=(n)=>{
-  aba=n;
-  document.querySelectorAll('#adminArea .tab').forEach(t=>t.className='tab off');
-  const el=document.getElementById('t-'+n);
-  if(el) el.className='tab on';
-  loadAdmin();
-};
-window.setCat=(c)=>{
-  cat=c;
-  document.querySelectorAll('.cat').forEach(x=>x.className='cat off');
-  document.getElementById('cat-'+c).className='cat on';
-  loadLoja();
-};
+window.setAba=(n)=>{aba=n;document.querySelectorAll('#adminArea .tabs .tab').forEach(t=>{if(!t.innerText.includes('Sair'))t.className='tab off'});const el=document.getElementById('t-'+n);if(el)el.className='tab on';loadAdmin();};
+window.setCat=(c)=>{cat=c;document.querySelectorAll('.cat').forEach(x=>x.className='cat off');document.getElementById('cat-'+c).className='cat on';loadLoja();};
 
 async function loadLoja(){
-  try{
-    const s=await getDocs(collection(db,"produtos"));
-    if(!s.empty){produtos=s.docs.map(d=>({id:d.id,...d.data()}));}
-  }catch(e){}
+  try{const s=await getDocs(collection(db,"produtos"));if(!s.empty){produtos=s.docs.map(d=>({id:d.id,...d.data()}));}}catch(e){}
   const buscaLoja=(document.getElementById("buscaLoja")?.value||"").toLowerCase();
-  let lista=produtos;
-  if(buscaLoja) lista=lista.filter(p=>(p.nome+p.codigo).toLowerCase().includes(buscaLoja));
-  if(cat!=='todos') lista=lista.filter(p=>p.nome.toLowerCase().includes(cat));
+  let lista=produtos;if(buscaLoja)lista=lista.filter(p=>(p.nome+p.codigo).toLowerCase().includes(buscaLoja));if(cat!=='todos')lista=lista.filter(p=>p.nome.toLowerCase().includes(cat));
   document.getElementById("produtos").innerHTML=lista.map(p=>{
     const est=Number(p.estoque??0);
     const tag=est<=0?`<span class="estoqueTag" style="background:#ffe0e0;color:#a00">🔴 ESGOTADO</span>`:est<=3?`<span class="estoqueTag" style="background:#ffefcc;color:#b36a00">⚠️ ${est} BAIXO</span>`: `<span class="estoqueTag" style="background:#e6f7e6;color:#0a7">✅ ${est} estoque</span>`;
     return `<div class="card"><img src="${p.imagem}" onerror="this.src='https://i.imgur.com/Y7VJv3c.jpeg'"><div class="card-body"><div style="font-size:11px;color:#ff8fab;font-weight:800">CÓD: ${p.codigo}</div><div style="font-size:13px;font-weight:700">${p.nome}</div><div class="price">R$ ${Number(p.preco).toFixed(2).replace('.',',')}</div>${tag}<button class="btnAdd" onclick="add('${p.codigo}')" ${est<=0?'disabled':''}>${est<=0?'ESGOTADO':'🛒 ADICIONAR'}</button></div></div>`;
   }).join("")||`<div style="grid-column:1/3;text-align:center;padding:30px;color:#cc8a9c">Nenhum produto encontrado</div>`;
 }
-
-window.add=(c)=>{
-  const p=produtos.find(x=>x.codigo===c);
-  if(!p){alert("Produto não encontrado");return;}
-  if(Number(p.estoque)<=0){alert("Esgotado");return}
-  carrinho.push(p);
-  update();
-  abrirCarrinho();
-  clearTimeout(abandonTimer);
-  abandonTimer=setTimeout(()=>{salvarAbandonado();},60000);
-};
-window.abrirCarrinho=()=>{document.getElementById("cart").classList.add("show");};
-window.fecharCarrinho=()=>{
-  document.getElementById("cart").classList.remove("show");
-  if(carrinho.length>0){ salvarAbandonado(); }
-};
-function update(){
-  let t=0;
-  document.getElementById("cartItems").innerHTML=carrinho.map((c,i)=>{
-    t+=Number(c.preco);
-    return `<div style="padding:8px 0;border-bottom:1px solid #eee"><b>${c.codigo}</b> ${c.nome}<span style="float:right;color:red;cursor:pointer" onclick="carrinho.splice(${i},1);update()">remover</span></div>`;
-  }).join("")||"Vazio";
-  document.getElementById("total").innerText="Total: R$ "+t.toFixed(2).replace('.',',');
-  document.getElementById("cartCount").innerText=carrinho.length;
-}
-async function salvarAbandonado(){
-  if(carrinho.length===0) return;
-  try{
-    const total=carrinho.reduce((s,p)=>s+Number(p.preco),0);
-    await addDoc(collection(db,"abandonados"),{
-      produtos:carrinho.map(c=>({codigo:c.codigo,nome:c.nome,preco:c.preco})),
-      total,
-      dataHora:new Date().toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo"}),
-      criadoEm:serverTimestamp()
-    });
-  }catch(e){}
-}
+window.add=(c)=>{const p=produtos.find(x=>x.codigo===c);if(!p||Number(p.estoque)<=0){alert("Esgotado");return}carrinho.push(p);update();abrirCarrinho();clearTimeout(abandonTimer);abandonTimer=setTimeout(()=>salvarAbandonado(),60000);};
+window.abrirCarrinho=()=>document.getElementById("cart").classList.add("show");
+window.fecharCarrinho=()=>{document.getElementById("cart").classList.remove("show");if(carrinho.length>0)salvarAbandonado();};
+function update(){let t=0;document.getElementById("cartItems").innerHTML=carrinho.map((c,i)=>{t+=Number(c.preco);return `<div style="padding:8px 0;border-bottom:1px solid #eee"><b>${c.codigo}</b> ${c.nome}<span style="float:right;color:red;cursor:pointer" onclick="carrinho.splice(${i},1);update()">remover</span></div>`}).join("")||"Vazio";document.getElementById("total").innerText="Total: R$ "+t.toFixed(2).replace('.',',');document.getElementById("cartCount").innerText=carrinho.length;}
+async function salvarAbandonado(){if(carrinho.length===0)return;try{const total=carrinho.reduce((s,p)=>s+Number(p.preco),0);await addDoc(collection(db,"abandonados"),{produtos:carrinho.map(c=>({codigo:c.codigo,nome:c.nome,preco:c.preco})),total,dataHora:new Date().toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo"}),criadoEm:serverTimestamp()});}catch(e){}}
 window.finalizar=async()=>{
-  const nome=document.getElementById("nome").value.trim();
-  const whats=document.getElementById("whats").value.trim();
-  const endereco=document.getElementById("endereco").value.trim();
-  const pagamento=document.getElementById("pagamento").value;
-  if(!nome||!whats){alert("Preencha nome e WhatsApp");return}
-  if(carrinho.length===0){alert("Carrinho vazio");return}
-  const dataHora=new Date().toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo"});
-  const total=carrinho.reduce((s,p)=>s+Number(p.preco),0);
+  const nome=document.getElementById("nome").value.trim(),whats=document.getElementById("whats").value.trim(),endereco=document.getElementById("endereco").value.trim(),pagamento=document.getElementById("pagamento").value;
+  if(!nome||!whats){alert("Preencha nome e WhatsApp");return}if(carrinho.length===0){alert("Carrinho vazio");return}
+  const dataHora=new Date().toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo"}),total=carrinho.reduce((s,p)=>s+Number(p.preco),0);
   try{
     const cli=await addDoc(collection(db,"clientes"),{nome,whatsapp:whats,endereco,pagamento,dataHora,criadoEm:serverTimestamp()});
     await addDoc(collection(db,"pedidos"),{clienteId:cli.id,clienteNome:nome,clienteWhats:whats,endereco,pagamento,produtos:carrinho.map(c=>({codigo:c.codigo,nome:c.nome,preco:c.preco})),total,status:"EM ANDAMENTO",statusFinal:"PRODUTO PRONTO",dataHora,criadoEm:serverTimestamp()});
-    for(const c of carrinho){
-      const prod=produtos.find(p=>p.codigo===c.codigo);
-      if(prod&&prod.id){
-        await updateDoc(doc(db,"produtos",prod.id),{estoque:Math.max(0,Number(prod.estoque||0)-1)});
-      }
-    }
-  }catch(e){console.log(e);}
+    for(const c of carrinho){const prod=produtos.find(p=>p.codigo===c.codigo);if(prod&&prod.id){await updateDoc(doc(db,"produtos",prod.id),{estoque:Math.max(0,Number(prod.estoque||0)-1)});}}
+  }catch(e){}
   const lista=carrinho.map(c=>`• 🔹 *CÓD: ${c.codigo}* - ${c.nome}\n   💲 R$ ${Number(c.preco).toFixed(2).replace('.',',')}`).join("\n\n");
   const msg=`🩴 *NOVO PEDIDO - CIDOKA CHINELOS* 🩴\n\n👤 *Cliente:* ${nome}\n📱 *Whats:* ${whats}\n📍 *End:* ${endereco||'Não informado'}\n💳 *Pag:* ${pagamento}\n📅 *Data:* ${dataHora}\n\n📦 *PRODUTOS:*\n${lista}\n\n💰 *Total: R$ ${total.toFixed(2).replace('.',',')}*\n⏳ *Status: EM ANDAMENTO*`;
-  window.open(`https://wa.me/${MEU_ZAP}?text=${encodeURIComponent(msg)}`,"_blank");
-  carrinho=[];update();fecharCarrinho();loadLoja();loadAdmin();
+  window.open(`https://wa.me/${MEU_ZAP}?text=${encodeURIComponent(msg)}`,"_blank");carrinho=[];update();fecharCarrinho();loadLoja();loadAdmin();
 };
-window.check=()=>{
-  const v=document.getElementById("x1").value.trim();
-  if(v===_k||v==="cida304050"){
-    localStorage.setItem("_a","1");
-    document.getElementById("lock").classList.remove("show");
-    document.getElementById("adminArea").style.display="block";
-    document.getElementById("loja").style.display="none";
-    document.getElementById("iaBtn").style.display="none";
-    document.getElementById("iaBox").style.display="none";
-    loadAdmin();
-  }else{alert("Senha incorreta");}
-};
-window.onFile=(input,isEdit=false,editId=null)=>{
-  const file=input.files[0];
-  if(!file) return;
-  if(file.size>900000){alert("Imagem até 900KB");return}
-  const r=new FileReader();
-  r.onload=e=>{
-    if(isEdit&&editId){
-      galeriaEdit[editId]=e.target.result;
-      const img=document.getElementById("previewEdit-"+editId);
-      if(img){img.src=galeriaEdit[editId];img.style.display="block";}
-    }else{
-      imagemBase64=e.target.result;
-      const img=document.getElementById("preview");
-      if(img){img.src=imagemBase64;img.style.display="block";}
-    }
-  };
-  r.readAsDataURL(file);
-};
+window.check=()=>{const v=document.getElementById("x1").value.trim();if(v===_k||v==="cida304050"){localStorage.setItem("_a","1");document.getElementById("lock").classList.remove("show");document.getElementById("adminArea").style.display="block";document.getElementById("loja").style.display="none";loadAdmin();}else alert("Senha incorreta");};
+window.onFile=(input,isEdit=false,editId=null)=>{const file=input.files[0];if(!file)return;if(file.size>900000){alert("Imagem até 900KB");return}const r=new FileReader();r.onload=e=>{if(isEdit&&editId){galeriaEdit[editId]=e.target.result;const img=document.getElementById("previewEdit-"+editId);if(img){img.src=galeriaEdit[editId];img.style.display="block";}}else{imagemBase64=e.target.result;const img=document.getElementById("preview");if(img){img.src=imagemBase64;img.style.display="block";}}};r.readAsDataURL(file);};
+
 window.loadAdmin=async()=>{
   const busca=(document.getElementById("busca").value||"").toLowerCase();
   try{
-    for(const k of ["pedidos","clientes","produtos","abandonados"]){
-      try{
-        const s=await getDocs(collection(db,k));
-        todos[k]=s.docs.map(d=>({id:d.id,...d.data()}));
-      }catch(e){todos[k]=[];}
-    }
-    const pedidos=todos.pedidos;
-    const clientes=todos.clientes;
-    const produtosAdm=todos.produtos.length?todos.produtos:produtos;
-    const abandonados=todos.abandonados;
+    for(const k of ["pedidos","clientes","produtos","abandonados","encomendas"]){try{const s=await getDocs(collection(db,k));todos[k]=s.docs.map(d=>({id:d.id,...d.data()}));}catch(e){todos[k]=[];}}
+    const pedidos=todos.pedidos,clientes=todos.clientes,produtosAdm=todos.produtos.length?todos.produtos:produtos,abandonados=todos.abandonados,encomendas=todos.encomendas;
     const fat=pedidos.reduce((s,p)=>s+Number(p.total||0),0);
     const baixo=produtosAdm.filter(p=>Number(p.estoque||0)<=3).length;
     const fatAband=abandonados.reduce((s,p)=>s+Number(p.total||0),0);
-    document.getElementById("dash").innerHTML=`<div class="dashCard"><b>R$ ${fat.toFixed(2).replace('.',',')}</b><span>💰 Faturamento</span></div><div class="dashCard"><b>${pedidos.length}</b><span>📦 Pedidos</span></div><div class="dashCard"><b>${abandonados.length}</b><span>🤖 Abandonados<br><small>R$ ${fatAband.toFixed(0)}</small></span></div><div class="dashCard"><b style="color:${baixo>0?'#e11':'#0a7'}">${baixo}</b><span>⚠️ Baixo estoque</span></div>`;
-    let itens=todos[aba]||[];
-    if(aba==='produtos'&&itens.length===0) itens=produtos;
-    if(aba==='ia') itens=produtosAdm;
-    if(busca&&aba!=='ia') itens=itens.filter(i=>JSON.stringify(i).toLowerCase().includes(busca));
-    const form=document.getElementById("formAdd");
-    const list=document.getElementById("adminList");
-    if(aba==='produtos'){
+    document.getElementById("dash").innerHTML=`<div class="dashCard"><b>R$ ${fat.toFixed(2).replace('.',',')}</b><span>💰 Faturamento</span></div><div class="dashCard"><b>${pedidos.length}</b><span>📦 Pedidos</span></div><div class="dashCard"><b>${abandonados.length}</b><span>🤖 Abandonados<br><small>R$ ${fatAband.toFixed(0)}</small></span></div><div class="dashCard"><b style="color:${baixo>0?'#e11':'#0a7'}">${baixo}</b><span>⚠️ Baixo estoque</span></div><div class="dashCard" style="grid-column:1/3"><b style="color:${encomendas.length>0?'#ff8fab':'#111'}">${encomendas.length}</b><span>📝 Encomendas</span></div>`;
+    let itens=todos[aba]||[];if(aba==='produtos'&&itens.length===0)itens=produtos;if(aba==='ia')itens=produtosAdm;if(busca&&aba!=='ia')itens=itens.filter(i=>JSON.stringify(i).toLowerCase().includes(busca));
+    const form=document.getElementById("formAdd"),list=document.getElementById("adminList");
+
+    if(aba==='clientes'){
+      form.innerHTML=`<h3>👥 ${clientes.length} Clientes</h3><p style="font-size:11px;color:#888">Clientes vêm do carrinho. Para encomenda use a aba 📝 Encomendas</p>`;
+      list.innerHTML=clientes.map(c=>`<div class="editCard"><b>${c.nome}</b> - ${c.whatsapp}<br><small>${c.endereco||''} | ${c.dataHora||''}</small><br><div style="display:flex;gap:6px;margin-top:6px"><button class="btn btn-ok" onclick="window.open('https://wa.me/55${(c.whatsapp||'').replace(/\\D/g,'')}')">💬 Zap</button><button class="btn btn-edit" onclick="setAba('encomendas');setTimeout(()=>{document.getElementById('encNome').value='${c.nome}';document.getElementById('encZap').value='${c.whatsapp}';document.getElementById('encEndereco').value='${c.endereco||''}';},300)">📝 Encomenda</button><button class="btn btn-del" onclick="delDoc('clientes','${c.id}')">🗑️</button></div></div>`).join("")||"Nenhum cliente - igual no seu print";
+    }
+    else if(aba==='encomendas'){
+      form.innerHTML=`
+        <h3>📝 Cadastrar Cliente para Encomenda</h3>
+        <div style="display:flex;gap:8px"><input id="encNome" class="input" placeholder="Nome da cliente *"><input id="encZap" class="input" placeholder="WhatsApp *"></div>
+        <input id="encEndereco" class="input" placeholder="Endereço">
+        <div style="display:flex;gap:8px"><input id="encProduto" class="input" placeholder="Produto CÓD A1 *"><input id="encTamanho" class="input" placeholder="Tam 37"><input id="encQtd" class="input" type="number" placeholder="Qtd" value="1"></div>
+        <div style="display:flex;gap:8px"><input id="encData" class="input" type="date"><input id="encSinal" class="input" type="number" step="0.01" placeholder="Sinal R$"><input id="encTotal" class="input" type="number" step="0.01" placeholder="Total R$"></div>
+        <input id="encObs" class="input" placeholder="Obs: cor, detalhe">
+        <select id="encStatus" class="input"><option value="PENDENTE">🟡 PENDENTE</option><option value="PRODUZINDO">🟠 PRODUZINDO</option><option value="PRONTO">🟢 PRONTO</option><option value="ENTREGUE">✅ ENTREGUE</option></select>
+        <button class="btn btn-encomenda" onclick="addEncomenda()">💾 SALVAR ENCOMENDA</button>
+      `;
+      list.innerHTML=itens.sort((a,b)=>(b.criadoEm?.seconds||0)-(a.criadoEm?.seconds||0)).map(e=>{
+        const corStatus=e.status==='PENDENTE'?'#ffcc00':e.status==='PRODUZINDO'?'#ff8f00':e.status==='PRONTO'?'#25D366':'#888';
+        const falta=Number(e.total||0)-Number(e.sinal||0);
+        return `<div class="editCard" style="border-left:6px solid ${corStatus}"><b>${e.nome}</b> - ${e.whatsapp} <span style="float:right;font-weight:800;color:${corStatus}">${e.status}</span><br><small>📦 ${e.produtoCodigo} Tam ${e.tamanho||'-'} Qtd ${e.qtd||1} | 💰 Total R$${Number(e.total||0).toFixed(2)} | Sinal R$${Number(e.sinal||0).toFixed(2)} | Falta R$${falta.toFixed(2)}</small><br><small>📅 Entrega: ${e.dataEntrega||'-'} | 📍 ${e.endereco||''}<br>📝 ${e.obs||''} | ${e.dataHora||''}</small><br><div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap"><button class="btn btn-ok" onclick="mudarStatusEnc('${e.id}','PRONTO')">✅ Pronto</button><button class="btn btn-edit" onclick="mudarStatusEnc('${e.id}','ENTREGUE')">📦 Entregue</button><button class="btn btn-edit" style="background:#ff8fab" onclick="chamarEnc('${e.id}')">💬 Zap Cliente</button><button class="btn btn-del" onclick="delDoc('encomendas','${e.id}')">🗑️</button></div></div>`;
+      }).join("")||"Nenhuma encomenda ainda. Cadastre acima!";
+    }
+    else if(aba==='produtos'){
       form.innerHTML=`<h3>➕ Novo Produto - Catálogo</h3><div style="display:flex;gap:8px"><input id="pCod" class="input" placeholder="Código A2"><input id="pEst" class="input" type="number" placeholder="Estoque 20"></div><input id="pNome" class="input" placeholder="Nome ex: Chinelo Floral Rosa"><input id="pPreco" class="input" type="number" step="0.01" placeholder="Preço 59.90"><input type="file" id="fileInput" accept="image/*" style="display:none" onchange="onFile(this,false)"><button class="btn btn-galeria" onclick="document.getElementById('fileInput').click()">📷 ESCOLHER DA GALERIA</button><img id="preview" class="previewImg"><input id="pImg" class="input" placeholder="Ou ./chinelo_A2.jpg"><button class="btn btn-ok" style="width:100%;padding:14px" onclick="addProd()">💾 SALVAR NO CATÁLOGO</button>`;
       list.innerHTML=itens.map(p=>`<div class="editCard" id="card-${p.id||p.codigo}"><div style="display:flex;gap:10px"><img src="${p.imagem}" style="width:70px;height:70px;border-radius:12px;object-fit:cover" onerror="this.src='https://i.imgur.com/Y7VJv3c.jpeg'"><div style="flex:1"><b>${p.nome}</b><br><small>CÓD: ${p.codigo} | R$ ${Number(p.preco).toFixed(2).replace('.',',')} | ${p.estoque} unid.</small></div></div><div id="edit-${p.id||p.codigo}" style="display:none;margin-top:10px"><div style="display:flex;gap:8px"><input id="e-cod-${p.id||p.codigo}" value="${p.codigo}" class="input"><input id="e-est-${p.id||p.codigo}" type="number" value="${p.estoque}" class="input"></div><input id="e-nome-${p.id||p.codigo}" value="${p.nome}" class="input"><input id="e-preco-${p.id||p.codigo}" type="number" step="0.01" value="${p.preco}" class="input"><input type="file" id="fileEdit-${p.id||p.codigo}" accept="image/*" style="display:none" onchange="onFile(this,true,'${p.id||p.codigo}')"><button class="btn btn-galeria" style="padding:10px;margin-top:6px" onclick="document.getElementById('fileEdit-${p.id||p.codigo}').click()">📷 TROCAR FOTO DA GALERIA</button><img id="previewEdit-${p.id||p.codigo}" class="previewImg"><div style="display:flex;gap:6px;margin-top:8px"><button class="btn btn-ok" style="flex:1" onclick="salvarEdicao('${p.id||p.codigo}')">💾 SALVAR ALTERAÇÕES</button><button class="btn btn-del" onclick="toggleEdit('${p.id||p.codigo}')">✕</button></div></div><div style="display:flex;gap:6px;margin-top:8px" id="btns-${p.id||p.codigo}"><button class="btn btn-edit" style="flex:1" onclick="toggleEdit('${p.id||p.codigo}')">✏️ EDITAR TUDO</button>${p.id?`<button class="btn btn-del" onclick="delDoc('produtos','${p.id}')">🗑️</button>`:``}</div></div>`).join("")||"Nenhum produto";
     }else if(aba==='ia'){
-      form.innerHTML=`<h3>🧠 IA 6 - Previsão de Estoque</h3><p style="font-size:12px;color:#888">Baseado nos pedidos, a IA calcula quando vai acabar</p>`;
+      form.innerHTML=`<h3>🧠 IA 6 - Previsão de Estoque (só admin)</h3><p style="font-size:11px;color:#888">IA 1, 6 e 7 ativas - cliente não vê</p>`;
       list.innerHTML=produtosAdm.map(p=>{
         const vendidos=pedidos.reduce((s,ped)=>s+ (ped.produtos||[]).filter(pr=>pr.codigo===p.codigo).length,0);
-        const dias=30;
-        const mediaDia=vendidos/dias||0.1;
-        const diasRestantes=mediaDia>0? Math.floor(Number(p.estoque)/mediaDia) : 99;
+        const mediaDia=vendidos/30||0.1;const diasRestantes=mediaDia>0?Math.floor(Number(p.estoque)/mediaDia):99;
         const cor=diasRestantes<=3?'#e11':diasRestantes<=7?'#b36a00':'#0a7';
-        const texto=diasRestantes<=3?`🔴 ACABA EM ${diasRestantes} DIAS - COMPRAR AGORA!`: diasRestantes<=7?`🟡 Acaba em ${diasRestantes} dias`:`🟢 Tranquilo - ${diasRestantes} dias`;
+        const texto=diasRestantes<=3?`🔴 ACABA EM ${diasRestantes} DIAS - COMPRAR AGORA!`:diasRestantes<=7?`🟡 Acaba em ${diasRestantes} dias`:`🟢 Tranquilo - ${diasRestantes} dias`;
         return `<div class="editCard" style="border-left:6px solid ${cor}"><b>${p.codigo} - ${p.nome}</b><br><small>Estoque: ${p.estoque} | Vendidos/mês: ${vendidos} | Média: ${mediaDia.toFixed(1)}/dia</small><br><div class="alertIA" style="border-color:${cor};margin-top:6px"><b style="color:${cor}">${texto}</b><br>IA sugere: comprar ${Math.ceil(mediaDia*15)} unid.</div></div>`;
       }).join("");
     }else if(aba==='abandonados'){
-      form.innerHTML=`<h3>🤖 IA 7 - Carrinhos Abandonados - R$ ${fatAband.toFixed(2).replace('.',',')} perdidos</h3><p style="font-size:12px;color:#888">Quem colocou no carrinho e não comprou</p>`;
+      form.innerHTML=`<h3>🤖 IA 7 - Carrinhos Abandonados (só admin)</h3><p style="font-size:11px;color:#888">Quem colocou no carrinho e não comprou</p>`;
       list.innerHTML=itens.sort((a,b)=>(b.criadoEm?.seconds||0)-(a.criadoEm?.seconds||0)).map(a=>`<div class="editCard" style="border-left:6px solid #ff8fab"><b>🛒 R$ ${Number(a.total||0).toFixed(2).replace('.',',')}</b> - ${a.dataHora||''}<br><small>${(a.produtos||[]).map(p=>p.codigo).join(', ')}</small><br><button class="btn btn-ok" onclick="recuperarAbandonado('${a.id}')">💬 RECUPERAR NO ZAP</button><button class="btn btn-del" onclick="delDoc('abandonados','${a.id}')">🗑️</button></div>`).join("")||"Nenhum abandono ainda - IA de olho 👀";
-    }else if(aba==='clientes'){
-      form.innerHTML=`<h3>👥 ${itens.length} Clientes</h3>`;
-      list.innerHTML=itens.map(c=>`<div class="editCard"><b>${c.nome}</b> - ${c.whatsapp}<br><small>${c.endereco||''} | ${c.dataHora||''}</small><br><button class="btn btn-ok" onclick="window.open('https://wa.me/55${(c.whatsapp||'').replace(/\\D/g,'')}')">💬 Zap</button><button class="btn btn-del" onclick="delDoc('clientes','${c.id}')">🗑️</button></div>`).join("")||"Nenhum cliente";
     }else{
-      form.innerHTML=`<h3>📦 ${itens.length} Pedidos - Total R$ ${fat.toFixed(2).replace('.',',')}</h3>`;
+      form.innerHTML=`<h3>📦 ${itens.length} Pedidos</h3>`;
       list.innerHTML=itens.sort((a,b)=>(b.criadoEm?.seconds||0)-(a.criadoEm?.seconds||0)).map(p=>`<div class="editCard" style="border-left:6px solid ${p.status==='PRODUTO PRONTO'?'#25D366':'#ffcc00'}"><b>${p.clienteNome}</b> - ${p.clienteWhats}<br><small>R$${Number(p.total||0).toFixed(2)} | ${p.dataHora||''}<br>${(p.produtos||[]).map(x=>x.codigo).join(', ')}</small><br><span style="font-weight:800">${p.status}</span><br><button class="btn btn-ok" onclick="mudaStatus('${p.id}')">✅ PRONTO</button><button class="btn btn-del" onclick="delDoc('pedidos','${p.id}')">🗑️</button></div>`).join("")||"Nenhum pedido";
     }
-  }catch(e){
-    document.getElementById("adminList").innerHTML="Erro: "+e.message;
-  }
+  }catch(e){document.getElementById("adminList").innerHTML="Erro: "+e.message;}
 };
-window.recuperarAbandonado=(id)=>{
-  const a=todos.abandonados.find(x=>x.id===id);
-  if(!a) return;
-  const lista=(a.produtos||[]).map(p=>`• ${p.codigo} - ${p.nome}`).join('\n');
-  const msg=`Oi! 🌸 Vi que você gostou desses na CIDOKA Chinelos mas não finalizou:\n\n${lista}\n\n💰 Total: R$ ${Number(a.total).toFixed(2).replace('.',',')}\n\nAinda quer? Te faço com frete grátis hoje! 😍\nhttps://n12344321-ship-it.github.io/cidokachinelos/`;
-  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,'_blank');
+window.addEncomenda=async()=>{
+  const nome=document.getElementById('encNome').value.trim(),whatsapp=document.getElementById('encZap').value.trim(),endereco=document.getElementById('encEndereco').value.trim(),produtoCodigo=document.getElementById('encProduto').value.trim(),tamanho=document.getElementById('encTamanho').value.trim(),qtd=parseInt(document.getElementById('encQtd').value)||1,dataEntrega=document.getElementById('encData').value,sinal=parseFloat(document.getElementById('encSinal').value)||0,total=parseFloat(document.getElementById('encTotal').value)||0,obs=document.getElementById('encObs').value.trim(),status=document.getElementById('encStatus').value;
+  if(!nome||!whatsapp||!produtoCodigo){alert("Nome, Whats e CÓD do produto são obrigatórios");return;}
+  try{
+    await addDoc(collection(db,"encomendas"),{nome,whatsapp,endereco,produtoCodigo,tamanho,qtd,dataEntrega,sinal,total,obs,status,dataHora:new Date().toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo"}),criadoEm:serverTimestamp(),clienteWhats:whatsapp});
+    await addDoc(collection(db,"clientes"),{nome,whatsapp,endereco,dataHora:new Date().toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo"}),criadoEm:serverTimestamp()});
+    alert("✅ Encomenda cadastrada! Cliente também salvo.");
+    document.getElementById('encNome').value="";document.getElementById('encZap').value="";document.getElementById('encProduto').value="";document.getElementById('encSinal').value="";document.getElementById('encTotal').value="";
+    loadAdmin();
+  }catch(e){alert("Erro: "+e.message);}
 };
-window.toggleEdit=(id)=>{
-  const el=document.getElementById("edit-"+id);
-  const btns=document.getElementById("btns-"+id);
-  const card=document.getElementById("card-"+id);
-  if(!el) return;
-  if(el.style.display==="none"){
-    el.style.display="block";
-    if(btns) btns.style.display="none";
-    if(card) card.classList.add("editando");
-  }else{
-    el.style.display="none";
-    if(btns) btns.style.display="flex";
-    if(card) card.classList.remove("editando");
-  }
-};
-window.salvarEdicao=async(id)=>{
-  const codigo=document.getElementById("e-cod-"+id)?.value.trim();
-  const nome=document.getElementById("e-nome-"+id)?.value.trim();
-  const preco=parseFloat(document.getElementById("e-preco-"+id)?.value);
-  const estoque=parseInt(document.getElementById("e-est-"+id)?.value);
-  if(!codigo||!nome||isNaN(preco)){alert("Código, nome e preço obrigatórios");return;}
-  const prod=produtos.find(p=>p.id===id||p.codigo===id);
-  if(prod&&!prod.id){
-    prod.codigo=codigo;prod.nome=nome;prod.preco=preco;prod.estoque=estoque;
-    if(galeriaEdit[id]) prod.imagem=galeriaEdit[id];
-    loadLoja();loadAdmin();alert("✅ Atualizado localmente!");
-    return;
-  }
-  const up={codigo,nome,preco,estoque};
-  if(galeriaEdit[id]) up.imagem=galeriaEdit[id];
-  await updateDoc(doc(db,"produtos",id),up);
-  delete galeriaEdit[id];
-  alert("✅ Catálogo atualizado!");
-  loadAdmin();loadLoja();
-};
-window.addProd=async()=>{
-  const codigo=document.getElementById("pCod").value.trim();
-  const nome=document.getElementById("pNome").value.trim();
-  const preco=parseFloat(document.getElementById("pPreco").value);
-  const estoque=parseInt(document.getElementById("pEst").value)||0;
-  let imagem=document.getElementById("pImg").value.trim()||imagemBase64||"./chinelo_A1.jpg";
-  if(imagemBase64) imagem=imagemBase64;
-  if(!codigo||!nome||isNaN(preco)){alert("Código, nome e preço obrigatórios");return}
-  await addDoc(collection(db,"produtos"),{codigo,nome,preco,estoque,imagem,criadoEm:serverTimestamp()});
-  imagemBase64="";
-  const prev=document.getElementById("preview");
-  if(prev){prev.style.display="none";prev.src="";}
-  document.getElementById("pImg").value="";
-  alert("✅ Salvo no Firebase!");
-  loadAdmin();loadLoja();
-};
-window.delDoc=async(col,id)=>{
-  if(!confirm("Excluir?")) return;
-  await deleteDoc(doc(db,col,id));
-  loadAdmin();
-  if(col==='produtos') loadLoja();
-};
-window.mudaStatus=async(id)=>{
-  await updateDoc(doc(db,"pedidos",id),{status:"PRODUTO PRONTO",statusFinal:"PRODUTO PRONTO"});
-  loadAdmin();
-};
+window.mudarStatusEnc=async(id,status)=>{await updateDoc(doc(db,"encomendas",id),{status});loadAdmin();};
+window.chamarEnc=(id)=>{const e=todos.encomendas.find(x=>x.id===id);if(!e)return;const falta=Number(e.total||0)-Number(e.sinal||0);const msg=`Oi ${e.nome}! 🌸 Sua encomenda CIDOKA:\n\n📦 ${e.produtoCodigo} Tam ${e.tamanho||'-'} Qtd ${e.qtd}\n📅 Entrega: ${e.dataEntrega||'a combinar'}\n💰 Total R$${Number(e.total||0).toFixed(2)} | Sinal R$${Number(e.sinal||0).toFixed(2)} | Falta R$${falta.toFixed(2)}\n📍 Status: ${e.status}\n\nQualquer dúvida me chama! 😍`;window.open(`https://wa.me/55${(e.whatsapp||'').replace(/\\D/g,'')}?text=${encodeURIComponent(msg)}`,'_blank');};
+window.recuperarAbandonado=(id)=>{const a=todos.abandonados.find(x=>x.id===id);if(!a)return;const lista=(a.produtos||[]).map(p=>`• ${p.codigo} - ${p.nome}`).join('\n');const msg=`Oi! 🌸 Vi que você gostou desses na CIDOKA mas não finalizou:\n\n${lista}\n\n💰 Total: R$ ${Number(a.total).toFixed(2).replace('.',',')}\n\nAinda quer? Te faço com frete grátis hoje! 😍\nhttps://n12344321-ship-it.github.io/cidokachinelos/`;window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,'_blank');};
+window.toggleEdit=(id)=>{const el=document.getElementById("edit-"+id),btns=document.getElementById("btns-"+id),card=document.getElementById("card-"+id);if(!el)return;if(el.style.display==="none"){el.style.display="block";if(btns)btns.style.display="none";if(card)card.classList.add("editando");}else{el.style.display="none";if(btns)btns.style.display="flex";if(card)card.classList.remove("editando");}};
+window.salvarEdicao=async(id)=>{const codigo=document.getElementById("e-cod-"+id)?.value.trim(),nome=document.getElementById("e-nome-"+id)?.value.trim(),preco=parseFloat(document.getElementById("e-preco-"+id)?.value),estoque=parseInt(document.getElementById("e-est-"+id)?.value);if(!codigo||!nome||isNaN(preco)){alert("Preencha código, nome e preço");return;}const prod=produtos.find(p=>p.id===id||p.codigo===id);if(prod&&!prod.id){prod.codigo=codigo;prod.nome=nome;prod.preco=preco;prod.estoque=estoque;if(galeriaEdit[id])prod.imagem=galeriaEdit[id];loadLoja();loadAdmin();alert("✅ Atualizado localmente!");return;}const up={codigo,nome,preco,estoque};if(galeriaEdit[id])up.imagem=galeriaEdit[id];await updateDoc(doc(db,"produtos",id),up);delete galeriaEdit[id];alert("✅ Catálogo atualizado!");loadAdmin();loadLoja();};
+window.addProd=async()=>{const codigo=document.getElementById("pCod").value.trim(),nome=document.getElementById("pNome").value.trim(),preco=parseFloat(document.getElementById("pPreco").value),estoque=parseInt(document.getElementById("pEst").value)||0;let imagem=document.getElementById("pImg").value.trim()||imagemBase64||"./chinelo_A1.jpg";if(imagemBase64)imagem=imagemBase64;if(!codigo||!nome||isNaN(preco)){alert("Código, nome e preço obrigatórios");return}await addDoc(collection(db,"produtos"),{codigo,nome,preco,estoque,imagem,criadoEm:serverTimestamp()});imagemBase64="";const prev=document.getElementById("preview");if(prev){prev.style.display="none";prev.src="";}alert("✅ Salvo no Firebase!");loadAdmin();loadLoja();};
+window.delDoc=async(col,id)=>{if(!confirm("Excluir?"))return;await deleteDoc(doc(db,col,id));loadAdmin();if(col==='produtos')loadLoja();};
+window.mudaStatus=async(id)=>{await updateDoc(doc(db,"pedidos",id),{status:"PRODUTO PRONTO",statusFinal:"PRODUTO PRONTO"});loadAdmin();};
 
 loadLoja();
 const params=new URLSearchParams(location.search);
@@ -372,52 +218,9 @@ if(params.has('admin')||localStorage.getItem("_a")==="1"){
   if(localStorage.getItem("_a")==="1"){
     document.getElementById("loja").style.display="none";
     document.getElementById("adminArea").style.display="block";
-    document.getElementById("iaBtn").style.display="none";
     loadAdmin();
-  }else{
-    document.getElementById('lock').classList.add('show');
-  }
+  }else{document.getElementById('lock').classList.add('show');}
 }
-
-window.toggleIA=()=>{
-  const b=document.getElementById('iaBox');
-  b.style.display=b.style.display==='flex'?'none':'flex';
-};
-window.enviarIA=()=>{
-  const input=document.getElementById('iaInput');
-  const txt=input.value.trim();
-  if(!txt) return;
-  const msgs=document.getElementById('iaMsgs');
-  msgs.innerHTML+=`<div class="msg user">${txt}</div>`;
-  input.value='';
-  setTimeout(()=>{
-    const t=txt.toLowerCase();
-    if(t.includes('entrega')||t.includes('frete')||t.includes('tempo')){
-      msgs.innerHTML+=`<div class="msg ia">🚚 Entrega em Teixeira de Freitas no mesmo dia! 🌸<br>Outras cidades: 2 a 3 dias úteis.<br>Frete grátis acima de R$ 100!</div>`;
-    }else if(t.includes('tamanho')||t.includes('número')||t.includes('num')){
-      msgs.innerHTML+=`<div class="msg ia">Temos do 34 ao 39! 🌸<br>Qual modelo você gostou? Me fala o CÓD (ex: A1) que eu vejo o estoque agora.</div>`;
-    }else{
-      let lista=produtos||[];
-      if(t.includes('rosa')||t.includes('floral')) lista=lista.filter(p=>p.nome.toLowerCase().includes('rosa')||p.nome.toLowerCase().includes('floral'));
-      if(t.includes('preto')) lista=lista.filter(p=>p.nome.toLowerCase().includes('preto'));
-      if(t.includes('sabonete')) lista=lista.filter(p=>p.nome.toLowerCase().includes('sabonete'));
-      if(t.includes('chinelo')) lista=lista.filter(p=>p.nome.toLowerCase().includes('chinelo'));
-      const num=t.match(/\d+/);
-      if(num){
-        const valor=parseInt(num[0]);
-        if(valor>20) lista=lista.filter(p=>Number(p.preco)<=valor);
-      }
-      if(lista.length===0){
-        msgs.innerHTML+=`<div class="msg ia">Não achei com esse filtro 😕<br>Mas olha esses que estão bombando:<br>${produtos.slice(0,2).map(p=>`• ${p.codigo} - ${p.nome} R$ ${p.preco} (${p.estoque} unid.)`).join('<br>')}</div>`;
-      }else{
-        const p=lista[0];
-        const status=Number(p.estoque)>0?`✅ Temos ${p.estoque} unidades!`:`🔴 Acabou, mas chega semana que vem`;
-        msgs.innerHTML+=`<div class="msg ia">Achei pra você! 🌸<br><b>${p.codigo} - ${p.nome}</b><br>R$ ${Number(p.preco).toFixed(2).replace('.',',')}<br>${status}<br><br><button class="btn btn-ok" onclick="add('${p.codigo}');toggleIA();abrirCarrinho()">🛒 Adicionar</button></div>`;
-      }
-    }
-    msgs.scrollTop=msgs.scrollHeight;
-  },500);
-};
 </script>
 </body>
 </html>
