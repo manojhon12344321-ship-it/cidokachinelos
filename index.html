@@ -14,10 +14,14 @@ header img{height:44px;border-radius:8px;background:#fff;padding:2px}
 .badge{background:#111;color:#fff;padding:6px 12px;border-radius:20px;font-size:13px}
 .btn-cart{background:#25D366;color:#fff;border:0;padding:8px 18px;border-radius:20px;font-weight:800}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px}
-.card{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,.07);display:flex;flex-direction:column}
+.card{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,.07);display:flex;flex-direction:column;position:relative}
+.card.esgotado{opacity:.6}
 .card img{width:100%;height:170px;object-fit:cover;background:#eee}
 .card-body{padding:10px;flex:1;display:flex;flex-direction:column}
 .card-body button{margin-top:auto;background:#111;color:#fff;border:0;padding:10px;border-radius:10px;font-weight:800}
+.card-body button:disabled{background:#999}
+.estoqueTag{font-size:10px;padding:3px 6px;border-radius:6px;margin-top:4px;display:inline-block}
+.estoque-ok{background:#e6f7e6;color:#0a7}.estoque-baixo{background:#ffefcc;color:#b36a00}.estoque-zero{background:#ffe0e0;color:#a00}
 #cart{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;z-index:99}
 #cart.show{display:flex;align-items:flex-end}
 #cartBox{background:#fff;width:100%;max-height:93vh;border-radius:22px 22px 0 0;padding:16px;overflow:auto}
@@ -32,7 +36,7 @@ header img{height:44px;border-radius:8px;background:#fff;padding:2px}
 </style>
 </head>
 <body>
-<header onclick="clickLogo()"><img src="./logo.png" alt="logo" onerror="this.style.display='none'"><div><h1>CIDOKA CHINELOS</h1><p style="font-size:11px;opacity:.8">TEIXEIRA - 73 9961-3272 | 5 toques = admin</p></div></header>
+<header onclick="clickLogo()"><img src="./logo.png" alt="logo" onerror="this.style.display='none'"><div><h1>CIDOKA CHINELOS</h1><p style="font-size:11px;opacity:.8">5 toques na logo = admin</p></div></header>
 <img class="banner" src="./banner_feminino.jpg" alt="banner" onerror="this.style.display='none'">
 
 <div id="lock"><div class="lockBox">
@@ -48,11 +52,11 @@ header img{height:44px;border-radius:8px;background:#fff;padding:2px}
 </div>
 
 <div id="adminArea" style="display:none;padding:10px">
-<h2>ADMIN CIDOKA</h2>
+<h2>ADMIN CIDOKA - Estoque</h2>
 <div style="display:flex;flex-wrap:wrap;gap:6px;padding:8px 0">
 <button class="btn btn-edit" onclick="setAba('pedidos')">Pedidos</button>
 <button class="btn btn-edit" onclick="setAba('clientes')">Clientes</button>
-<button class="btn btn-edit" onclick="setAba('produtos')">Produtos</button>
+<button class="btn btn-edit" onclick="setAba('produtos')">Produtos/Estoque</button>
 <button class="btn" onclick="localStorage.removeItem('_a');location.href=location.pathname">Sair</button>
 </div>
 <input id="busca" class="input" placeholder="Buscar..." oninput="loadAdmin()">
@@ -77,12 +81,17 @@ const _k=atob("Y2lkYTMwNDA1MA==");
 const app=initializeApp(firebaseConfig);
 const db=getFirestore(app);
 let aba='pedidos',clicks=0,timer=null;
-const fallback=[{codigo:"A1",nome:"CIDOKA Chinelo A1",preco:49.90,imagem:"./chinelo_A1.jpg"},{codigo:"C1",nome:"CIDOKA Sabonete C1",preco:15.00,imagem:"./sabonete_C1.jpg"}];
+const fallback=[{codigo:"A1",nome:"CIDOKA Chinelo A1",preco:49.90,imagem:"./chinelo_A1.jpg",estoque:20},{codigo:"C1",nome:"CIDOKA Sabonete C1",preco:15.00,imagem:"./sabonete_C1.jpg",estoque:50}];
 let produtos=[],carrinho=[];
 window.clickLogo=()=>{clicks++;clearTimeout(timer);timer=setTimeout(()=>clicks=0,2000);if(clicks>=5){clicks=0;document.getElementById('lock').classList.add('show');}};
 window.setAba=(n)=>{aba=n;loadAdmin();};
-async function loadLoja(){try{const s=await getDocs(collection(db,"produtos"));produtos=s.empty?fallback:s.docs.map(d=>({id:d.id,...d.data()}));}catch(e){produtos=fallback;}document.getElementById("produtos").innerHTML=produtos.map(p=>`<div class="card"><img src="${p.imagem}" onerror="this.src='./chinelo_A1.jpg'"><div class="card-body"><h3>${p.nome}</h3><div style="font-size:11px;color:#888">CÓD: ${p.codigo}</div><b>R$ ${Number(p.preco).toFixed(2).replace('.',',')}</b><button onclick="add('${p.codigo}')">ADICIONAR</button></div></div>`).join("");}
-window.add=(c)=>{const p=produtos.find(x=>x.codigo===c);carrinho.push(p);update();abrirCarrinho();}
+async function loadLoja(){try{const s=await getDocs(collection(db,"produtos"));produtos=s.empty?fallback:s.docs.map(d=>({id:d.id,...d.data()}));}catch(e){produtos=fallback;}
+document.getElementById("produtos").innerHTML=produtos.map(p=>{
+  const est=Number(p.estoque??0);
+  const tag=est<=0?`<span class="estoqueTag estoque-zero">🔴 ESGOTADO</span>`:est<=3?`<span class="estoqueTag estoque-baixo">⚠️ ${est} unid. - BAIXO</span>`: `<span class="estoqueTag estoque-ok">✅ ${est} em estoque</span>`;
+  return `<div class="card ${est<=0?'esgotado':''}"><img src="${p.imagem}" onerror="this.src='./chinelo_A1.jpg'"><div class="card-body"><h3>${p.nome}</h3><div style="font-size:11px;color:#888">CÓD: ${p.codigo}</div><b>R$ ${Number(p.preco).toFixed(2).replace('.',',')}</b>${tag}<button onclick="add('${p.codigo}')" ${est<=0?'disabled':''}>${est<=0?'ESGOTADO':'ADICIONAR'}</button></div></div>`;
+}).join("");}
+window.add=(c)=>{const p=produtos.find(x=>x.codigo===c);if(Number(p.estoque)<=0){alert("Produto esgotado");return}carrinho.push(p);update();abrirCarrinho();}
 window.abrirCarrinho=()=>document.getElementById("cart").classList.add("show");
 window.fecharCarrinho=()=>document.getElementById("cart").classList.remove("show");
 function update(){let t=0;document.getElementById("cartItems").innerHTML=carrinho.map((c,i)=>{t+=Number(c.preco);return `<div style="padding:8px 0;border-bottom:1px solid #eee"><b>${c.codigo}</b> ${c.nome}<span style="float:right;color:red;cursor:pointer" onclick="carrinho.splice(${i},1);update()">remover</span></div>`}).join("")||"Vazio";document.getElementById("total").innerText="Total: R$ "+t.toFixed(2).replace('.',',');document.getElementById("cartCount").innerText=carrinho.length+" itens";}
@@ -90,36 +99,43 @@ window.finalizar=async()=>{
   const nome=document.getElementById("nome").value.trim(),whats=document.getElementById("whats").value.trim(),endereco=document.getElementById("endereco").value.trim(),pagamento=document.getElementById("pagamento").value;
   if(!nome||!whats){alert("Preencha nome e WhatsApp");return}if(carrinho.length===0){alert("Carrinho vazio");return}
   const dataHora=new Date().toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo"}),total=carrinho.reduce((s,p)=>s+Number(p.preco),0);
-  try{const cli=await addDoc(collection(db,"clientes"),{nome,whatsapp:whats,endereco,pagamento,dataHora,criadoEm:serverTimestamp()});await addDoc(collection(db,"pedidos"),{clienteId:cli.id,clienteNome:nome,clienteWhats:whats,endereco,pagamento,produtos:carrinho.map(c=>({codigo:c.codigo,nome:c.nome,preco:c.preco})),total,status:"EM ANDAMENTO",statusFinal:"PRODUTO PRONTO",dataHora,criadoEm:serverTimestamp()});}catch(e){}
+  try{
+    const cli=await addDoc(collection(db,"clientes"),{nome,whatsapp:whats,endereco,pagamento,dataHora,criadoEm:serverTimestamp()});
+    await addDoc(collection(db,"pedidos"),{clienteId:cli.id,clienteNome:nome,clienteWhats:whats,endereco,pagamento,produtos:carrinho.map(c=>({codigo:c.codigo,nome:c.nome,preco:c.preco})),total,status:"EM ANDAMENTO",statusFinal:"PRODUTO PRONTO",dataHora,criadoEm:serverTimestamp()});
+    for(const c of carrinho){const prod=produtos.find(p=>p.codigo===c.codigo);if(prod&&prod.id){await updateDoc(doc(db,"produtos",prod.id),{estoque:Math.max(0,Number(prod.estoque||0)-1)});}}
+  }catch(e){console.log(e)}
   const lista=carrinho.map(c=>`• 🔹 *CÓD: ${c.codigo}* - ${c.nome}\n   💲 R$ ${Number(c.preco).toFixed(2).replace('.',',')}`).join("\n\n");
-  const msg=`🩴 *NOVO PEDIDO - CIDOKA CHINELOS* 🩴\n\n👤 *Cliente:* ${nome}\n📱 *Whats:* ${whats}\n📍 *End:* ${endereco||'Não informado'}\n💳 *Pag:* ${pagamento}\n📅 *Data:* ${dataHora}\n\n📦 *PRODUTOS:*\n${lista}\n\n💰 *Total: R$ ${total.toFixed(2).replace('.',',')}*\n⏳ *Status: EM ANDAMENTO*`;
-  window.open(`https://wa.me/${MEU_ZAP}?text=${encodeURIComponent(msg)}`,"_blank");carrinho=[];update();fecharCarrinho();
+  const msg=`🩴 *NOVO PEDIDO - CIDOKA CHINELOS* 🩴\n\n👤 *Cliente:* ${nome}\n📱 *Whats:* ${whats}\n📍 *End:* ${endereco||'Não informado'}\n💳 *Pag:* ${pagamento}\n📅 *Data:* ${dataHora}\n\n📦 *PRODUTOS:*\n${lista}\n\n💰 *Total: R$ ${total.toFixed(2).replace('.',',')}*\n⏳ *Status: EM ANDAMENTO*\n\n---\n✅ Cliente aguardando`;
+  window.open(`https://wa.me/${MEU_ZAP}?text=${encodeURIComponent(msg)}`,"_blank");carrinho=[];update();fecharCarrinho();loadLoja();
 }
 window.check=()=>{if(document.getElementById("x1").value.trim()===_k){localStorage.setItem("_a","1");document.getElementById("lock").classList.remove("show");document.getElementById("adminArea").style.display="block";document.getElementById("loja").style.display="none";loadAdmin();}else{alert("Senha incorreta");}}
 window.loadAdmin=async()=>{
   const busca=(document.getElementById("busca").value||"").toLowerCase();
   const list=document.getElementById("adminList"),form=document.getElementById("formAdd");
-  list.innerHTML="Carregando "+aba+"...";
-  try{
-    const snap=await getDocs(collection(db,aba));let itens=snap.docs.map(d=>({id:d.id,...d.data()}));
-    if(busca) itens=itens.filter(i=>JSON.stringify(i).toLowerCase().includes(busca));
-    if(aba==='produtos'){
-      form.innerHTML=`<h3>➕ Adicionar Produto Novo</h3><input id="pCod" class="input" placeholder="Código ex: A2, A3, B1, C2"><input id="pNome" class="input" placeholder="Nome ex: Chinelo A2"><input id="pPreco" class="input" type="number" step="0.01" placeholder="Preço ex: 59.90"><input id="pImg" class="input" placeholder="Imagem ex: ./chinelo_A2.jpg"><button class="btn btn-ok" style="width:100%;padding:12px" onclick="addProd()">💾 SALVAR PRODUTO</button><div style="font-size:11px;color:#666;margin-top:6px">Seus arquivos já no GitHub: logo.png, banner_feminino.jpg, chinelo_A1.jpg, sabonete_C1.jpg<br>Novos: suba no GitHub e use ./NOME.jpg</div>`;
-      list.innerHTML=itens.map(p=>`<div class="admin"><b>CÓD: ${p.codigo}</b> - ${p.nome} - R$${Number(p.preco).toFixed(2)}<br><img src="${p.imagem}" style="width:60px;height:60px;object-fit:cover;border-radius:8px" onerror="this.src='./chinelo_A1.jpg'"><br><button class="btn btn-edit" onclick="editProd('${p.id}')">Editar</button><button class="btn btn-del" onclick="delDoc('produtos','${p.id}')">Excluir</button></div>`).join("")||"Nenhum produto no Firebase ainda - adicione acima";
-    }else if(aba==='clientes'){
-      form.innerHTML=`<h3>👥 Clientes: ${itens.length}</h3>`;
-      list.innerHTML=itens.map(c=>`<div class="admin"><b>${c.nome||''}</b> - ${c.whatsapp||''}<br><small>${c.endereco||''} | ${c.dataHora||''}</small><br><button class="btn btn-edit" onclick="editCli('${c.id}')">Editar</button><button class="btn btn-del" onclick="delDoc('clientes','${c.id}')">Excluir</button><button class="btn btn-blue" onclick="window.open('https://wa.me/55${(c.whatsapp||'').replace(/\\D/g,'')}')">Zap</button></div>`).join("")||"Nenhum cliente";
-    }else{
-      form.innerHTML=`<h3>📦 Pedidos: ${itens.length}</h3>`;
-      list.innerHTML=itens.sort((a,b)=>(b.criadoEm?.seconds||0)-(a.criadoEm?.seconds||0)).map(p=>`<div class="admin" style="border-left-color:${p.status==='PRODUTO PRONTO'?'#25D366':'#ffcc00'}"><b>${p.clienteNome||''}</b> - ${p.clienteWhats||''}<br><small>📅 ${p.dataHora||''} | 💰 R$${Number(p.total||0).toFixed(2)} | 📍 ${p.endereco||''}</small><br><small>📦 ${(p.produtos||[]).map(x=>x.codigo).join(', ')}</small><br>Status: <b>${p.status||'EM ANDAMENTO'}</b><br>${p.status!=='PRODUTO PRONTO'?`<button class="btn btn-ok" onclick="mudaStatus('${p.id}')">MARCAR PRODUTO PRONTO ✅</button>`: `<span style="color:#25D366;font-weight:800">✔ PRONTO</span>`}<button class="btn btn-del" onclick="delDoc('pedidos','${p.id}')">Excluir</button></div>`).join("")||"Nenhum pedido";
-    }
-  }catch(e){list.innerHTML="Erro Firebase: "+e.message+"<br>Verifique as regras: allow read, write: if true;";}
+  list.innerHTML="Carregando...";
+  const snap=await getDocs(collection(db,aba));let itens=snap.docs.map(d=>({id:d.id,...d.data()}));
+  if(busca) itens=itens.filter(i=>JSON.stringify(i).toLowerCase().includes(busca));
+  if(aba==='produtos'){
+    form.innerHTML=`<h3>➕ Produto + Estoque</h3><input id="pCod" class="input" placeholder="Código ex: A2"><input id="pNome" class="input" placeholder="Nome"><input id="pPreco" class="input" type="number" step="0.01" placeholder="Preço"><input id="pEst" class="input" type="number" placeholder="Estoque ex: 20"><input id="pImg" class="input" placeholder="Imagem ex: ./chinelo_A2.jpg"><button class="btn btn-ok" style="width:100%;padding:12px" onclick="addProd()">💾 SALVAR COM ESTOQUE</button>`;
+    list.innerHTML=itens.map(p=>{
+      const est=Number(p.estoque??0);
+      const cor=est<=0?'#e11':est<=3?'#b36a00':'#0a7';
+      return `<div class="admin" style="border-left-color:${cor}"><b>CÓD: ${p.codigo}</b> ${p.nome} - R$${Number(p.preco).toFixed(2)}<br><b style="color:${cor}">📦 Estoque: ${est} ${est<=3? (est<=0?'🔴 ESGOTADO':'⚠️ BAIXO'): '✅'}</b><br><img src="${p.imagem}" style="width:50px;height:50px;object-fit:cover;border-radius:6px" onerror="this.src='./chinelo_A1.jpg'"><br><button class="btn btn-edit" onclick="editProd('${p.id}')">Editar</button><button class="btn btn-blue" onclick="addEstoque('${p.id}',${est})">+ Estoque</button><button class="btn btn-del" onclick="delDoc('produtos','${p.id}')">Excluir</button></div>`;
+    }).join("")||"Nenhum produto - adicione acima";
+  }else if(aba==='clientes'){
+    form.innerHTML=`<h3>👥 Clientes: ${itens.length}</h3>`;
+    list.innerHTML=itens.map(c=>`<div class="admin"><b>${c.nome}</b> - ${c.whatsapp}<br><button class="btn btn-edit" onclick="editCli('${c.id}')">Editar</button><button class="btn btn-del" onclick="delDoc('clientes','${c.id}')">Excluir</button></div>`).join("")||"Nenhum";
+  }else{
+    form.innerHTML=`<h3>📦 Pedidos: ${itens.length}</h3>`;
+    list.innerHTML=itens.sort((a,b)=>(b.criadoEm?.seconds||0)-(a.criadoEm?.seconds||0)).map(p=>`<div class="admin"><b>${p.clienteNome}</b> ${p.clienteWhats}<br>Status: <b>${p.status}</b><br>${p.status!=='PRODUTO PRONTO'?`<button class="btn btn-ok" onclick="mudaStatus('${p.id}')">PRONTO ✅</button>`:``}<button class="btn btn-del" onclick="delDoc('pedidos','${p.id}')">Excluir</button></div>`).join("")||"Nenhum";
+  }
 }
-window.addProd=async()=>{const codigo=document.getElementById("pCod").value.trim(),nome=document.getElementById("pNome").value.trim(),preco=parseFloat(document.getElementById("pPreco").value),imagem=document.getElementById("pImg").value.trim()||"./chinelo_A1.jpg";if(!codigo||!nome||!preco){alert("Preencha código, nome e preço");return}await addDoc(collection(db,"produtos"),{codigo,nome,preco,imagem,criadoEm:serverTimestamp(),dataHora:new Date().toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo"})});alert("✅ Produto "+codigo+" salvo!");loadAdmin();loadLoja();}
-window.editProd=async(id)=>{const n=prompt("Novo nome:");const pr=prompt("Novo preço:");const img=prompt("Nova imagem:");const up={};if(n) up.nome=n;if(pr) up.preco=parseFloat(pr);if(img) up.imagem=img;if(Object.keys(up).length) await updateDoc(doc(db,"produtos",id),up);loadAdmin();loadLoja();}
+window.addProd=async()=>{const codigo=document.getElementById("pCod").value.trim(),nome=document.getElementById("pNome").value.trim(),preco=parseFloat(document.getElementById("pPreco").value),estoque=parseInt(document.getElementById("pEst").value)||0,imagem=document.getElementById("pImg").value.trim()||"./chinelo_A1.jpg";if(!codigo||!nome||!preco){alert("Código, nome e preço");return}await addDoc(collection(db,"produtos"),{codigo,nome,preco,estoque,imagem,criadoEm:serverTimestamp()});alert("✅ "+codigo+" salvo com "+estoque+" unid!");loadAdmin();loadLoja();}
+window.addEstoque=async(id,atual)=>{const q=prompt(`Estoque atual: ${atual}\nQuanto adicionar? ex: 10`);if(!q)return;await updateDoc(doc(db,"produtos",id),{estoque:Number(atual)+Number(q)});loadAdmin();loadLoja();}
+window.editProd=async(id)=>{const n=prompt("Novo nome (vazio pra manter):");const pr=prompt("Novo preço:");const es=prompt("Novo estoque:");const img=prompt("Nova imagem:");const up={};if(n) up.nome=n;if(pr) up.preco=parseFloat(pr);if(es!==null&&es!=="") up.estoque=parseInt(es);if(img) up.imagem=img;if(Object.keys(up).length) await updateDoc(doc(db,"produtos",id),up);loadAdmin();loadLoja();}
 window.editCli=async(id)=>{const n=prompt("Novo nome:");const z=prompt("Novo Zap:");const up={};if(n) up.nome=n;if(z) up.whatsapp=z;if(Object.keys(up).length) await updateDoc(doc(db,"clientes",id),up);loadAdmin();}
 window.delDoc=async(col,id)=>{if(!confirm("Excluir?"))return;await deleteDoc(doc(db,col,id));loadAdmin();if(col==='produtos')loadLoja();}
-window.mudaStatus=async(id)=>{await updateDoc(doc(db,"pedidos",id),{status:"PRODUTO PRONTO",statusFinal:"PRODUTO PRONTO",atualizadoEm:serverTimestamp()});loadAdmin();}
+window.mudaStatus=async(id)=>{await updateDoc(doc(db,"pedidos",id),{status:"PRODUTO PRONTO",statusFinal:"PRODUTO PRONTO"});loadAdmin();}
 
 if(new URLSearchParams(location.search).has('admin') || localStorage.getItem("_a")==="1"){
   if(localStorage.getItem("_a")==="1"){document.getElementById("loja").style.display="none";document.getElementById("adminArea").style.display="block";loadAdmin();}
